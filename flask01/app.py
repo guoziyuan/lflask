@@ -1,5 +1,7 @@
 from flask import Flask
 from markupsafe import escape
+from flask import url_for
+from flask import request
 
 app = Flask(__name__)
 
@@ -7,6 +9,15 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     return 'Hello World!'
+
+
+# 默认只能接收get请求，也可以通过route装饰器设置请求类型
+@app.route('/method', methods=['GET', 'POST'])
+def method():
+    if request.method == 'GET':
+        return "get method"
+    else:
+        return 'post method!'
 
 
 @app.route('/test')
@@ -31,6 +42,8 @@ float：接收正浮点数
 path: 接收可能含有/的字符串
 uuid:接收UUID字符串
 """
+
+
 @app.route('/test/<int:id>')
 def get_id(id):
     return 'id is %s' % id
@@ -38,3 +51,9 @@ def get_id(id):
 
 if __name__ == '__main__':
     app.run()
+
+with app.test_request_context():
+    print(url_for('index'))
+    print(url_for("test"))
+    print(url_for("test/liming"))
+    print(url_for("test/100"))
