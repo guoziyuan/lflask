@@ -2,7 +2,7 @@
 
 import os
 from flask import Flask
-from . import db
+from . import db, blog
 from . import auth
 
 
@@ -29,6 +29,9 @@ def create_app(test_config=None):
 
     # 注册蓝图
     app.register_blueprint(auth.bp)
+    app.register_blueprint(blog.bp)
+    # 声明host/ 和host/index等价，都会返回index视图
+    app.add_url_rule("/", endpoint='index')
 
     @app.route("/index")
     def index():
