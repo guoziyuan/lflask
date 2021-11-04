@@ -11,6 +11,21 @@ def init_db():
         db.executescript(f.read().decode('utf-8'))
 
 
+# 定义一个命令
+@click.command('init_db')
+@with_appcontext
+def init_db_command():
+    init_db()
+    click.echo("init a database")
+
+
+def init_app(app):
+    #  Flask 在返回响应后进行清理的时候调用此函数。
+    app.teardown_appcontext(close_db)
+    #  添加一个新的 可以与 flask 一起工作的命令。
+    app.cli.add_command(init_db_command)
+
+
 # g是一个特殊对象，可以把多个函数要使用的对象存储其中；这里把数据连接对象存储其中，调用get_db()时就不会每次都去创建连接
 def get_db():
     if 'db' not in g:
@@ -26,7 +41,6 @@ def get_db():
 
 # 关闭，从g对象中弹出连接对象，然后关闭
 def close_db(e=None):
-    db = g.db.pop('db', None)
+    db = g.pop('db', None)
     if db is not None:
         db.close()
-

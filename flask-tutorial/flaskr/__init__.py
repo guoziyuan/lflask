@@ -2,6 +2,8 @@
 
 import os
 from flask import Flask
+from . import db
+from . import auth
 
 
 def create_app(test_config=None):
@@ -22,8 +24,14 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route("/hello")
-    def hello():
+    # 初始化数据库
+    db.init_app(app)
+
+    # 注册蓝图
+    app.register_blueprint(auth.bp)
+
+    @app.route("/index")
+    def index():
         return "hello world"
 
     return app
